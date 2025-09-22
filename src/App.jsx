@@ -1,33 +1,29 @@
 import React from 'react';
-import './App.css';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
+import { Auth0Provider } from '@auth0/auth0-react';  // Import necessary Auth0 components
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import WeatherDetails from './components/WeatherDetails';
 
+// Access environment variables from Vite
+const domain = import.meta.env.VITE_AUTH0_DOMAIN;
+const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
 
 function App() {
-  const { isAuthenticated, loginWithRedirect, isLoading, error } = useAuth0();
-
-  // Loading state
-  if (isLoading) return <div>Loading...</div>;
-
-  // Error handling
-  if (error) return <div>Error: {error.message}</div>;
+  const redirectUri = window.location.origin;
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/login" />} />
-        <Route path="/weather/:cityCode" element={<WeatherDetails />} />
-        <Route path="/login" element={!isAuthenticated ? (
-          <div>
-            <h2>Login</h2>
-            <button onClick={() => loginWithRedirect()}>Log in with Auth0</button>
-          </div>
-        ) : <Navigate to="/" />} />
-      </Routes>
-    </Router>
+    <Auth0Provider
+      domain={domain} // The Auth0 domain from .env
+      clientId={clientId} // The Auth0 client ID from .env
+      authorizationParams={{ redirect_uri: redirectUri }} // Use redirectUri properly
+    >
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/weather/:cityCode" element={<WeatherDetails />} />
+        </Routes>
+      </Router>
+    </Auth0Provider>
   );
 }
 
