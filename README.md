@@ -3,10 +3,9 @@
 A full-stack **Weather App** built using the **MERN stack** (MongoDB, Express.js, React, Node.js). This application allows users to authenticate securely, view real-time weather data for cities, and manage their personalized weather information. It integrates the **OpenWeatherMap API** for weather data and **Auth0** for secure user authentication, including multi-factor authentication (MFA).
 
 
-### Login Page
+### Weather Dashboard
 ![Login Page](assets/login.png)
 
-### Weather Dashboard
 ![Weather Dashboard](assets/view.png)
 
 ### Responsive Mobile View
