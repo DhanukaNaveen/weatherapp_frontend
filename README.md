@@ -7,7 +7,7 @@ A full-stack **Weather App** built using the **MERN stack** (MongoDB, Express.js
 ![Login Page](assets/login.png)
 
 ### Weather Dashboard
-![Weather Dashboard](assets/dashboard.png)
+![Weather Dashboard](assets/view.png)
 
 ### Responsive Mobile View
 ![Mobile View](assets/mobile.png)
