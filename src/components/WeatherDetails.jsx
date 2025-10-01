@@ -6,8 +6,8 @@ import { IoIosPartlySunny } from "react-icons/io";
 function WeatherDetails() {
   const { cityCode } = useParams();
   const location = useLocation();
-  const navigate = useNavigate();  // useNavigate hook for navigation
-  const weatherDetail = location.state?.weatherData;
+  const navigate = useNavigate();  
+  const weatherDetail = location.state?.data;
 
   if (!weatherDetail) {
     return (

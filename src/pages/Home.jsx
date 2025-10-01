@@ -13,45 +13,44 @@ function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchCityCodes = async () => {
-      try {
-        setLoading(true);  // Start loading
-        const response = await axios.get('http://localhost:5000/api/weather/cities');
-        setCityCodes(response.data);  // Store the city codes from backend
-        setLoading(false);  // End loading
-      } catch (error) {
-        console.error('Error fetching city codes:', error);
-        setError('Failed to fetch city codes.');
-        setLoading(false);  // End loading
-      }
-    };
 
-    fetchCityCodes();
-  }, []);
+useEffect(() => {
+  setLoading(true);  
 
-  useEffect(() => {
-    if (cityCodes.length > 0) {
-      const fetchWeatherData = async () => {
-        try {
-          setLoading(true);  // Start loading
-          const responses = await Promise.all(
-            cityCodes.map(cityCode =>
-              axios.get(`http://localhost:5000/api/weather/${cityCode}`)
-            )
-          );
-          setWeatherData(responses.map(response => response.data));
-          setLoading(false);  // End loading
-        } catch (error) {
-          console.error('Error fetching weather data:', error);
-          setError('Failed to fetch weather data.');
-          setLoading(false);  // End loading
-        }
-      };
+  axios.get('http://localhost:5000/api/weather/cities')
+    .then((response) => {
+      setCityCodes(response.data);  
+      setLoading(false); 
+    })
+    .catch((error) => {
+      console.error('Error fetching city codes:', error);  
+      setError('Failed to fetch city codes.');  
+      setLoading(false);  
+    });
 
-      fetchWeatherData();
-    }
-  }, [cityCodes]);
+}, []);  
+
+
+useEffect(() => {
+  setLoading(true);
+
+  Promise.all(
+    cityCodes.map(cityCode =>
+      axios.get(`http://localhost:5000/api/weather/${cityCode}`)
+    )
+  )
+  .then((responses) => {
+    setWeatherData(responses.map(response => response.data));
+    setLoading(false);
+  })
+  .catch((error) => {
+    console.error('Error fetching weather data:', error);
+    setError('Failed to fetch weather data.');
+    setLoading(false);
+  });
+}, [cityCodes]);
+
+
 
   return (
     <div className="min-h-screen bg-[url(./weatherbg.jpg)] bg-cover bg-center flex flex-col items-center justify-center p-4 pb-16">
@@ -94,13 +93,13 @@ function Home() {
          
             {loading && <div className="spinner mt-4">Loading...</div>}
 
-            {/* Weather Cards Display */}
+  
             <div className="flex flex-wrap justify-center gap-6 mt-4 sm:gap-8 md:gap-10 w-full">
-              {weatherData.map((data, index) => (
+              {weatherData.map((data) => (
                 <Link
-                  key={index}
+                  key={data.cityCode}
                   to={`/weather/${data.cityCode}`}
-                  state={{ weatherData: data }}
+                  state={{ data }}
                   className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 flex justify-center"
                 >
                   <WeatherCard weather={data} />
@@ -110,7 +109,6 @@ function Home() {
           </div>
         </>
       ) : (
-        // If the user is not authenticated, show the login button
         <div className="mt-4 flex justify-center w-full">
           <button
             onClick={() => loginWithRedirect()}

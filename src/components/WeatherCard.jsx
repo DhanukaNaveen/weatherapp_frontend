@@ -7,7 +7,7 @@ import { GiHeavyRain } from "react-icons/gi";
 import { FaSmog } from "react-icons/fa";
 
 function WeatherCard({ weather }) {
-  // Map weather conditions to background images
+
   const weatherBackgroundMap = {
     "few clouds": "a.png",
     "scattered clouds": "a.png",
@@ -23,7 +23,6 @@ function WeatherCard({ weather }) {
     "haze": "e.png",
   };
 
-  // Map weather conditions to icons (same icon for the same background)
   const weatherIconMap = {
     "few clouds": <FaCloudSun className="w-7 h-7 ml-6" />,
     "scattered clouds": <FaCloudSun className="w-7 h-7 ml-6" />,
@@ -39,10 +38,9 @@ function WeatherCard({ weather }) {
     "haze": <FaSmog className="w-7 h-7 ml-6" />,
   };
 
-  // Get the appropriate background image or default to "cardbg.png" if not found
-  const backgroundImage = weatherBackgroundMap[weather.weather.toLowerCase()] || "cardbg.png";
+  const backgroundImage = weatherBackgroundMap[weather.weather.toLowerCase()] || "card.png";
 
-  // Get the appropriate icon or default to "IoIosPartlySunny" if not found
+
   const weatherIcon = weatherIconMap[weather.weather.toLowerCase()] || <IoIosPartlySunny className="w-7 h-7 ml-6" />;
 
   return (
