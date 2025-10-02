@@ -5,8 +5,10 @@ import { IoIosPartlySunny } from "react-icons/io";
 import { Link } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 function Home() {
-  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();  // Auth0 hooks
+  const { loginWithRedirect, logout, isAuthenticated , isLoading, getAccessTokenSilently } = useAuth0();  
   const [weatherData, setWeatherData] = useState([]);
   const [cityCodes, setCityCodes] = useState([]);
   const [cityInput, setCityInput] = useState('');
@@ -15,41 +17,46 @@ function Home() {
 
 
 useEffect(() => {
-  setLoading(true);  
+  if (isLoading || !isAuthenticated) return;
 
-  axios.get('http://localhost:5000/api/weather/cities')
-    .then((response) => {
-      setCityCodes(response.data);  
-      setLoading(false); 
-    })
-    .catch((error) => {
-      console.error('Error fetching city codes:', error);  
-      setError('Failed to fetch city codes.');  
-      setLoading(false);  
+    getAccessTokenSilently().then(token => {
+      axios.get(`${BASE_URL}/api/weather/cities`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then(res => {
+          setCityCodes(res.data);
+          setLoading(false);
+        })
+        .catch(err => {
+          setError('Failed to fetch city codes');
+          setLoading(false);
+        });
     });
-
-}, []);  
+  }, [isAuthenticated, isLoading]); 
 
 
 useEffect(() => {
-  setLoading(true);
+  if (cityCodes.length === 0) return;
 
-  Promise.all(
-    cityCodes.map(cityCode =>
-      axios.get(`http://localhost:5000/api/weather/${cityCode}`)
-    )
-  )
-  .then((responses) => {
-    setWeatherData(responses.map(response => response.data));
-    setLoading(false);
-  })
-  .catch((error) => {
-    console.error('Error fetching weather data:', error);
-    setError('Failed to fetch weather data.');
-    setLoading(false);
-  });
-}, [cityCodes]);
-
+    setLoading(true);
+    getAccessTokenSilently().then(token => {
+      Promise.all(
+        cityCodes.map(code =>
+          axios.get(`${BASE_URL}/api/weather/${code}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          })
+        )
+      )
+        .then(responses => {
+          setWeatherData(responses.map(r => r.data));
+          setLoading(false);
+        })
+        .catch(() => {
+          setError('Failed to fetch weather data');
+          setLoading(false);
+        });
+    });
+  }, [cityCodes]);
 
 
   return (
